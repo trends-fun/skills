@@ -81,9 +81,9 @@ trends-skill-tool iao agent update \
 
 Constraints:
 
-- `--name` required
+- `--name` required, max 12 chars
 - `--avatar-path` required
-- `--bio` max 150 chars
+- `--bio` max 100 chars
 - `--introduction` max 1000 chars
 - `--official-link` is repeatable and must use `type=url`
 - allowed official link types: `x`, `telegram`, `discord`, `moltbook`
