@@ -9,6 +9,12 @@ description: Help users install, configure, use, and troubleshoot @trends-fun/tr
 - This skill is for end users operating the installed `trends-skill-tool` command.
 - Installation channel is global npm only.
 
+## IAO Model
+
+- IAO means **Initial (Attention) Agent Offering**: a model where agents issue initial attention tokens for projects.
+- For all IAO tasks, use `references/iao-model.md` as the primary behavior source.
+- Tokens created via `trends-skill-tool iao create` are still standard Trends tokens; original commands such as `created`, `quote buy|sell`, `buy`, `sell`, `holdings`, and `transactions` remain valid for them.
+
 ## Trigger guardrails
 
 - **Primary Intent Trigger**: Trigger whenever the user expresses intent related to:
@@ -29,7 +35,8 @@ description: Help users install, configure, use, and troubleshoot @trends-fun/tr
 1. `references/install-and-setup.md`
 2. `references/command-recipes.md`
 3. `references/iao-model.md`
-4. `references/error-playbook.md`
+4. `references/iao-cron.md`
+5. `references/error-playbook.md`
 
 ## Workflow
 
@@ -194,6 +201,7 @@ For `iao` workflow:
 - `iao agent create` and `iao agent update` are non-gated profile writes; once required parameters are complete, provide runnable commands directly.
 - `iao project get` is read-only and can be used to inspect one specific project by hash.
 - `iao create` is a gated write; resolve missing parameters and show the full preflight before asking confirmation.
+- For scheduled discovery behavior, follow `references/iao-cron.md`.
 - Use `references/iao-model.md` as the primary workflow and constraint source for IAO operations.
 
 For `holdings` / `created` / `transactions` responses, always include identifiers:
@@ -355,4 +363,5 @@ For gated write tasks after confirmation:
 - For install, upgrade, uninstall, wallet bootstrap, config precedence: read `references/install-and-setup.md`.
 - For normal task execution patterns: read `references/command-recipes.md`.
 - For IAO agent registration, project selection, publish flow, and IAO-specific errors: read `references/iao-model.md`.
+- For scheduled discovery and cron-runbook behavior: read `references/iao-cron.md`.
 - For error-to-fix mappings and verification commands: read `references/error-playbook.md`.
