@@ -369,7 +369,15 @@ trends-skill-tool --keypair <path> iao agent update --name <name> --avatar-path 
 trends-skill-tool --keypair <path> iao project list --count 20
 ```
 
-5. Preflight and execute publish:
+5. (Optional) Validate one project by hash:
+
+```bash
+trends-skill-tool --keypair <path> iao project get <hash>
+```
+
+Use this when the user already has a hash or wants single-item deep detail before publish.
+
+6. Preflight and execute publish:
 
 ```bash
 trends-skill-tool --keypair <path> iao create --project-url <url> --name <name> --symbol <symbol> [--description-url <url>] [--image-path <path>] [--desc <desc>] [--first-buy <sol>] [--project-submitter-bps <bps>]

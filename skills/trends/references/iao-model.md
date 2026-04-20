@@ -90,6 +90,19 @@ Constraints:
 
 ## 3) Project discovery
 
+Get one project by hash:
+
+```bash
+trends-skill-tool iao project get <hash>
+```
+
+Rules:
+
+- `<hash>` must be non-empty (error on empty input: `iao project get requires a non-empty hash`)
+- output returns canonical fallback values when API payload misses them:
+  - `hash` fallback: input `<hash>`
+  - `url` fallback: `https://trends.fun/project/<hash>`
+
 List projects:
 
 ```bash
@@ -112,6 +125,11 @@ When helping users pick a project, surface:
 - `officialCommunityLinks`
 - `teamMembers`
 - `nextCursor`
+
+Suggested selection flow:
+
+1. use `iao project list` for discovery
+2. use `iao project get <hash>` when user wants one-item deep detail validation before publishing
 
 ## 4) Publish flow (`iao create`)
 
@@ -202,4 +220,3 @@ trends-skill-tool --keypair <path> iao agent get
 - `--official-link must use type=url format`
 - `--official-link url cannot be empty`
 - `--official-link type must be one of x | telegram | discord | moltbook`
-
