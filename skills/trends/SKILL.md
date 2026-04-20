@@ -1,5 +1,5 @@
 name: trends
-description: Help users install, configure, use, and troubleshoot @trends-fun/trends-skill-tool, including IAO agent workflows. Use this skill whenever the user mentions trends or trends-skill commands (create, buy, sell, quote, reward, wallet, config, holdings, created, transactions, iao agent/project/create), asks how to install or upgrade this specific CLI, asks about agent wallet registration, or reports errors from this CLI (including IAO API JSON errors like 4055/4030). Prefer triggering even if the user says "trends command" or "trends tool" without the full package name
+description: Help users install, configure, use, and troubleshoot @trends-fun/trends-skill-tool, including IAO agent workflows. Use this skill whenever the user mentions trends or trends-skill commands (create, buy, sell, quote, reward, wallet, config, holdings, created, transactions, iao agent/project get/project list/create), asks how to install or upgrade this specific CLI, asks about agent wallet registration, or reports errors from this CLI. Prefer triggering even if the user says "trends command" or "trends tool" without the full package name
 ---
 
 # Trends CLI User Guide
@@ -18,8 +18,8 @@ description: Help users install, configure, use, and troubleshoot @trends-fun/tr
   - **Portfolio**: "What tokens do I hold?", "my holdings", "show my balance".
   - **Transactions**: "What transactions did I make?", "my transaction history", "recent trades".
 - **Trading/Quotes**: "Get a swap quote on trends.fun", "swap on trends.fun", "buy/sell on trends".
-- **IAO Agent Flow**: "register agent wallet", "iao agent", "iao project list", "iao create", "project-url", "description-url", "project-submitter-bps".
-- **Command-Based Trigger**: Trigger for explicit commands: `create`, `buy`, `sell`, `quote`, `reward`, `wallet`, `config`, `balance`, `holdings`, `created`, `transactions`, `iao`, `iao agent get`, `iao agent create`, `iao agent update`, `iao project list`, `iao create`.
+- **IAO Agent Flow**: "register agent wallet", "iao agent", "iao project get", "iao project list", "iao create", "project-url", "description-url", "project-submitter-bps".
+- **Command-Based Trigger**: Trigger for explicit commands: `create`, `buy`, `sell`, `quote`, `reward`, `wallet`, `config`, `balance`, `holdings`, `created`, `transactions`, `iao`, `iao agent get`, `iao agent create`, `iao agent update`, `iao project get`, `iao project list`, `iao create`.
 - **Package-Based Trigger**: Trigger when user mentions `@trends-fun/trends-skill-tool`, "trends command", or "trends tool".
 - **Lifecycle Trigger**: Trigger when user asks to install, upgrade, or uninstall this CLI.
 - **Error Trigger**: Trigger when user shares errors containing "trends-skill", IAO backend JSON errors (for example `error_code: 4055` / `4030`), or related bonding curve failures.
@@ -72,6 +72,7 @@ Non-gated commands (normal flow):
 - `trends-skill-tool iao agent get`
 - `trends-skill-tool iao agent create`
 - `trends-skill-tool iao agent update`
+- `trends-skill-tool iao project get`
 - `trends-skill-tool iao project list`
 - install/upgrade/uninstall commands
 
@@ -191,6 +192,7 @@ For `reward claim` preflight, always:
 For `iao` workflow:
 
 - `iao agent create` and `iao agent update` are non-gated profile writes; once required parameters are complete, provide runnable commands directly.
+- `iao project get` is read-only and can be used to inspect one specific project by hash.
 - `iao create` is a gated write; resolve missing parameters and show the full preflight before asking confirmation.
 - Use `references/iao-model.md` as the primary workflow and constraint source for IAO operations.
 
@@ -304,6 +306,7 @@ For gated write tasks after confirmation:
   - `trends-skill-tool iao agent get`
   - `trends-skill-tool iao agent create`
   - `trends-skill-tool iao agent update`
+  - `trends-skill-tool iao project get`
   - `trends-skill-tool iao project list`
   - `trends-skill-tool iao create`
   - `trends-skill-tool wallet init`

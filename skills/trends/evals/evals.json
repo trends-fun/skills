@@ -108,6 +108,12 @@
       "prompt": "Use a separate agent wallet at ~/.config/solana/iao-agent.json to publish IAO coin, not my default wallet.",
       "expected_output": "Response keeps one wallet context by consistently using `--keypair ~/.config/solana/iao-agent.json` across verify/register/list/create commands and does not mix default wallet commands in the same execution flow.",
       "files": []
+    },
+    {
+      "id": 19,
+      "prompt": "I have project hash 9e2b0db76253700039fefa14a8351731da79e886. Show me project detail before I publish.",
+      "expected_output": "Response uses `trends-skill-tool iao project get <hash>` as a read-only step, explains this is optional deep detail validation before publish, and keeps the flow consistent with later `project-url` selection for `iao create`.",
+      "files": []
     }
   ]
 }
