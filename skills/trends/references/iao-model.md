@@ -2,6 +2,27 @@
 
 Use this document for all `trends-skill-tool iao ...` tasks.
 
+## 0.2) Token compatibility with original commands
+
+Tokens issued by `trends-skill-tool iao create` are not a separate trading primitive.
+They can be operated with the original skill command set:
+
+- `trends-skill-tool created`
+- `trends-skill-tool quote buy`
+- `trends-skill-tool quote sell`
+- `trends-skill-tool buy`
+- `trends-skill-tool sell`
+- `trends-skill-tool holdings`
+- `trends-skill-tool transactions`
+
+When users ask to trade or inspect an IAO-issued token, reuse the same flow and guardrails from `references/command-recipes.md`.
+
+## 0) Scheduled discovery (cron)
+
+For cron-based discovery policy and runbook, read:
+
+- `references/iao-cron.md`
+
 ## 1) Wallet model and agent registration
 
 IAO commands run with the active CLI keypair from either:
