@@ -67,10 +67,12 @@ The following operations are gated writes:
 - `trends-skill-tool buy`
 - `trends-skill-tool sell`
 - `trends-skill-tool reward claim`
+- `trends-skill-tool iao create`
 
 Default behavior:
 
 - For `create`, complete missing parameters first.
+- For `iao create`, complete missing parameters first.
 - Do preflight after parameters are fully resolved.
 - Ask for explicit confirmation only after parameters are fully resolved.
 - Only then provide/write execution command steps.
@@ -80,6 +82,11 @@ Bypass behavior:
 - If user explicitly requests direct write (`direct write`, `不要确认`, `skip confirmation`, `直接执行`), bypass confirmation for current request unless user says session-level.
 - Even under bypass, still provide preflight disclosure before write execution.
 - Bypass does not skip parameter completion for missing create fields.
+
+IAO note:
+
+- `iao agent create` and `iao agent update` are non-gated profile writes.
+- Keep the full IAO constraints and error handling in `references/iao-model.md`.
 
 ## 3) Quote-first trade flow (required for buy/sell)
 
@@ -329,3 +336,49 @@ Never suggest commands that read key material files, including:
 Allowed wallet verification:
 
 - `trends-skill-tool wallet address`
+
+## 9) IAO routing (agent model)
+
+Use this section only as a workflow index. For full rules, constraints, and error handling, read `references/iao-model.md`.
+
+Execution order:
+
+1. Verify wallet context:
+
+```bash
+trends-skill-tool wallet address
+trends-skill-tool --keypair <path> wallet address
+```
+
+2. Check registration state:
+
+```bash
+trends-skill-tool --keypair <path> iao agent get
+```
+
+3. Create or update profile:
+
+```bash
+trends-skill-tool --keypair <path> iao agent create --name <name> --avatar-path <path>
+trends-skill-tool --keypair <path> iao agent update --name <name> --avatar-path <path>
+```
+
+4. List and select project URL:
+
+```bash
+trends-skill-tool --keypair <path> iao project list --count 20
+```
+
+5. (Optional) Validate one project by hash:
+
+```bash
+trends-skill-tool --keypair <path> iao project get <hash>
+```
+
+Use this when the user already has a hash or wants single-item deep detail before publish.
+
+6. Preflight and execute publish:
+
+```bash
+trends-skill-tool --keypair <path> iao create --project-url <url> --name <name> --symbol <symbol> [--description-url <url>] [--image-path <path>] [--desc <desc>] [--first-buy <sol>] [--project-submitter-bps <bps>]
+```

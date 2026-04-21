@@ -1,5 +1,5 @@
 name: trends
-description: Help users install, configure, use, and troubleshoot @trends-fun/trends-skill-tool. Use this skill whenever the user mentions trends or trends-skill commands (create, buy, sell, quote, reward, wallet, config, holdings, created, transactions), asks how to install or upgrade this specific CLI, or reports an error from this CLI. Prefer triggering even if the user says "trends command" or "trends tool" without the full package name
+description: Help users install, configure, use, and troubleshoot @trends-fun/trends-skill-tool, including IAO agent workflows. Use this skill whenever the user mentions trends or trends-skill commands (create, buy, sell, quote, reward, wallet, config, holdings, created, transactions, iao agent/project get/project list/create), asks how to install or upgrade this specific CLI, asks about agent wallet registration, or reports errors from this CLI. Prefer triggering even if the user says "trends command" or "trends tool" without the full package name
 ---
 
 # Trends CLI User Guide
@@ -9,6 +9,12 @@ description: Help users install, configure, use, and troubleshoot @trends-fun/tr
 - This skill is for end users operating the installed `trends-skill-tool` command.
 - Installation channel is global npm only.
 
+## IAO Model
+
+- IAO means **Initial (Attention) Agent Offering**: a model where agents issue initial attention tokens for projects.
+- For all IAO tasks, use `references/iao-model.md` as the primary behavior source.
+- Tokens created via `trends-skill-tool iao create` are still standard Trends tokens; original commands such as `created`, `quote buy|sell`, `buy`, `sell`, `holdings`, and `transactions` remain valid for them.
+
 ## Trigger guardrails
 
 - **Primary Intent Trigger**: Trigger whenever the user expresses intent related to:
@@ -17,17 +23,20 @@ description: Help users install, configure, use, and troubleshoot @trends-fun/tr
   - **Launch History**: "What tokens have I launched?", "my launch history", "show my created coins".
   - **Portfolio**: "What tokens do I hold?", "my holdings", "show my balance".
   - **Transactions**: "What transactions did I make?", "my transaction history", "recent trades".
-  - **Trading/Quotes**: "Get a swap quote on trends.fun", "swap on trends.fun", "buy/sell on trends".
-- **Command-Based Trigger**: Trigger for explicit commands: `create`, `buy`, `sell`, `quote`, `reward`, `wallet`, `config`, `balance`, `holdings`, `created`, `transactions`.
+- **Trading/Quotes**: "Get a swap quote on trends.fun", "swap on trends.fun", "buy/sell on trends".
+- **IAO Agent Flow**: "register agent wallet", "iao agent", "iao project get", "iao project list", "iao create", "project-url", "description-url", "project-submitter-bps".
+- **Command-Based Trigger**: Trigger for explicit commands: `create`, `buy`, `sell`, `quote`, `reward`, `wallet`, `config`, `balance`, `holdings`, `created`, `transactions`, `iao`, `iao agent get`, `iao agent create`, `iao agent update`, `iao project get`, `iao project list`, `iao create`.
 - **Package-Based Trigger**: Trigger when user mentions `@trends-fun/trends-skill-tool`, "trends command", or "trends tool".
 - **Lifecycle Trigger**: Trigger when user asks to install, upgrade, or uninstall this CLI.
-- **Error Trigger**: Trigger when user shares error messages containing "trends-skill" or related bonding curve failures.
+- **Error Trigger**: Trigger when user shares errors containing "trends-skill", IAO backend JSON errors (for example `error_code: 4055` / `4030`), or related bonding curve failures.
   
 ## Source-of-truth order
 
 1. `references/install-and-setup.md`
 2. `references/command-recipes.md`
-3. `references/error-playbook.md`
+3. `references/iao-model.md`
+4. `references/iao-cron.md`
+5. `references/error-playbook.md`
 
 ## Workflow
 
@@ -37,6 +46,7 @@ description: Help users install, configure, use, and troubleshoot @trends-fun/tr
 - Config/wallet
 - Read-only query
 - Trade flow
+- IAO agent flow
 - Troubleshooting
 
 1. Pick the matching recipe and provide runnable commands.
@@ -44,7 +54,7 @@ description: Help users install, configure, use, and troubleshoot @trends-fun/tr
 3. Provide one concrete fallback path tied to known CLI behavior.
 4. Recommend the next action only after the current step is verifiable.
 
-## Write Confirmation Gate (Trade Focused)
+## Write Confirmation Gate (Trade + IAO Publish)
 
 The following commands are write operations and require a confirmation gate by default:
 
@@ -52,6 +62,7 @@ The following commands are write operations and require a confirmation gate by d
 - `trends-skill-tool buy`
 - `trends-skill-tool sell`
 - `trends-skill-tool reward claim`
+- `trends-skill-tool iao create`
 
 Non-gated commands (normal flow):
 
@@ -65,6 +76,11 @@ Non-gated commands (normal flow):
 - `trends-skill-tool wallet init`
 - `trends-skill-tool wallet address`
 - `trends-skill-tool config list|get|set|reset`
+- `trends-skill-tool iao agent get`
+- `trends-skill-tool iao agent create`
+- `trends-skill-tool iao agent update`
+- `trends-skill-tool iao project get`
+- `trends-skill-tool iao project list`
 - install/upgrade/uninstall commands
 
 Use a staged flow for gated write commands:
@@ -73,7 +89,7 @@ Use a staged flow for gated write commands:
 - Phase A (not confirmed): preflight analysis + fully resolved parameter echo. Do not provide final executable write steps.
 - Phase B (confirmed): provide executable write steps.
 
-For `create`, Phase 0 is mandatory unless the user already provided all fields or explicitly accepted defaults for missing fields.
+For `create` and `iao create`, Phase 0 is mandatory unless the user already provided all required fields or explicitly accepted defaults for missing fields.
 
 Valid confirmation phrases include:
 
@@ -89,6 +105,7 @@ Bypass exception:
 - If the user explicitly states session-level preference, apply bypass for the session.
 - Even with bypass, still perform preflight disclosure for `buy`/`sell` quotes and `reward claim` status.
 - Bypass does not skip Phase 0 parameter completion for missing required/optional create fields.
+- Bypass does not skip Phase 0 parameter completion for missing required/optional `iao create` fields.
 
 If confirmation is unclear:
 
@@ -107,6 +124,21 @@ For `create` preflight, always echo:
 - `image source`
 - `first-buy` (initial buy amount at create time)
 - `dev-bps` (token deployer share / 代币部署者分成) and split explanation
+
+For `iao create` preflight, always echo:
+
+- current keypair/address context (which wallet will execute the command)
+- `project-url`
+- `name`
+- `symbol`
+- `description-url`
+- `desc`
+- `image source`
+- `first-buy`
+- `project-submitter-bps`
+- reward split summary:
+  - project submitter share = `project-submitter-bps` (default `7000`)
+  - agent coin creator share = `10000 - project-submitter-bps`
 
 For `create`, treat users as beginners and explain fields in plain language:
 
@@ -163,6 +195,14 @@ For `reward claim` preflight, always:
 - Echo `accountExists`, `rewardLamports`, `rewardSol`
 - Only proceed to claim confirmation when `accountExists=true` and `rewardLamports>0`
 - If not claimable, stop and provide retry condition
+
+For `iao` workflow:
+
+- `iao agent create` and `iao agent update` are non-gated profile writes; once required parameters are complete, provide runnable commands directly.
+- `iao project get` is read-only and can be used to inspect one specific project by hash.
+- `iao create` is a gated write; resolve missing parameters and show the full preflight before asking confirmation.
+- For scheduled discovery behavior, follow `references/iao-cron.md`.
+- Use `references/iao-model.md` as the primary workflow and constraint source for IAO operations.
 
 For `holdings` / `created` / `transactions` responses, always include identifiers:
 
@@ -271,6 +311,12 @@ For gated write tasks after confirmation:
   - `trends-skill-tool transactions`
   - `trends-skill-tool reward status`
   - `trends-skill-tool reward claim`
+  - `trends-skill-tool iao agent get`
+  - `trends-skill-tool iao agent create`
+  - `trends-skill-tool iao agent update`
+  - `trends-skill-tool iao project get`
+  - `trends-skill-tool iao project list`
+  - `trends-skill-tool iao create`
   - `trends-skill-tool wallet init`
   - `trends-skill-tool wallet address`
   - `trends-skill-tool config list|get|set|reset`
@@ -281,6 +327,7 @@ For gated write tasks after confirmation:
   - `quote sell`: exactly one of `--in-token` or `--out-sol`
 - Respect integer constraints:
   - Strict non-negative integers for options such as `--slippage-bps`, `--dev-bps`, `--count`, `--compute-unit-limit`, `--compute-unit-price`
+  - IAO strict integers include `--project-submitter-bps`, `--count`, `--start-at`, `--end-at`
   - `created/transactions --count` range is `1..25`
   - `holdings --count` is `>= 1`
 - Create-specific constraints:
@@ -315,4 +362,6 @@ For gated write tasks after confirmation:
 
 - For install, upgrade, uninstall, wallet bootstrap, config precedence: read `references/install-and-setup.md`.
 - For normal task execution patterns: read `references/command-recipes.md`.
+- For IAO agent registration, project selection, publish flow, and IAO-specific errors: read `references/iao-model.md`.
+- For scheduled discovery and cron-runbook behavior: read `references/iao-cron.md`.
 - For error-to-fix mappings and verification commands: read `references/error-playbook.md`.

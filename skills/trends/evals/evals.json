@@ -66,6 +66,54 @@
       "prompt": "帮我用trends发币，名字叫 world，符号也叫 wolrd。",
       "expected_output": "When responding in Chinese for create parameter completion, response uses URL wording exactly as `请输入你想指向的费用受益人X profile 或推文链接（可留空）`, and labels dev-bps as `代币部署者分成(dev-bps)` instead of creator-share wording.",
       "files": []
+    },
+    {
+      "id": 12,
+      "prompt": "Use my current wallet and register it as an IAO agent wallet, then show me how to check it.",
+      "expected_output": "Response verifies current wallet context first (`wallet address`), then provides direct runnable `iao agent create` command (non-gated), followed by verification command `iao agent get` for the same keypair context.",
+      "files": []
+    },
+    {
+      "id": 13,
+      "prompt": "I got this error: {\"status\":\"error\",\"error_code\":4055,\"error_msg\":\"User already exists\"} when running iao agent create.",
+      "expected_output": "Response maps error 4055 exactly, explains wallet already exists on trends.fun for this create path, and provides deterministic fix flow: create fresh Solana wallet, verify new address, rerun `iao agent create` with explicit `--keypair`.",
+      "files": []
+    },
+    {
+      "id": 14,
+      "prompt": "I got this error: {\"status\":\"error\",\"error_code\":4030,\"error_msg\":\"Operation not permitted\"} on iao create.",
+      "expected_output": "Response maps error 4030 exactly, explains non-agent/ineligible wallet context, and gives concrete verification path using same keypair (`wallet address`, `iao agent get`) before switching or creating/registering agent wallet.",
+      "files": []
+    },
+    {
+      "id": 15,
+      "prompt": "List IAO projects and help me choose a project-url for publishing.",
+      "expected_output": "Response uses `iao project list` flow and surfaces `items[].url` as publishable `project-url`, with key fields for selection (`title`, `referenceUrl`, `submitter`, `githubRepositoryUrl`, `officialXUrl`, `officialCommunityLinks`, `teamMembers`, `nextCursor`).",
+      "files": []
+    },
+    {
+      "id": 16,
+      "prompt": "Create an IAO coin for project https://trends.fun/project/abc named Agent Coin symbol AGENT, first buy 0.02.",
+      "expected_output": "Response treats `iao create` as gated write, performs parameter completion and preflight (wallet context, project-url, name, symbol, description-url, desc, image source, first-buy, project-submitter-bps, reward split), then asks explicit confirmation before executable write steps.",
+      "files": []
+    },
+    {
+      "id": 17,
+      "prompt": "For iao create, set project submitter share to 6800 bps.",
+      "expected_output": "Response uses `--project-submitter-bps` (not legacy `--dev-bps`), keeps value in allowed range, and explains split as submitter=6800 and coin creator=3200.",
+      "files": []
+    },
+    {
+      "id": 18,
+      "prompt": "Use a separate agent wallet at ~/.config/solana/iao-agent.json to publish IAO coin, not my default wallet.",
+      "expected_output": "Response keeps one wallet context by consistently using `--keypair ~/.config/solana/iao-agent.json` across verify/register/list/create commands and does not mix default wallet commands in the same execution flow.",
+      "files": []
+    },
+    {
+      "id": 19,
+      "prompt": "I have project hash 9e2b0db76253700039fefa14a8351731da79e886. Show me project detail before I publish.",
+      "expected_output": "Response uses `trends-skill-tool iao project get <hash>` as a read-only step, explains this is optional deep detail validation before publish, and keeps the flow consistent with later `project-url` selection for `iao create`.",
+      "files": []
     }
   ]
 }
