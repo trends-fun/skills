@@ -92,6 +92,12 @@ IAO note:
 
 Before any `buy` or `sell`, always quote first and explain quote summary.
 
+Network selection rules:
+
+- Default SDK network is `mainnet-beta`.
+- Do not infer SDK network from `rpcUrl`.
+- If the user is on devnet, include `--network devnet` and a devnet RPC explicitly.
+
 Quote buy first:
 
 ```bash
@@ -102,6 +108,12 @@ Quote sell first:
 
 ```bash
 trends-skill-tool quote sell <mint> --in-token 1
+```
+
+Devnet quote example:
+
+```bash
+trends-skill-tool --network devnet --rpc-url https://api.devnet.solana.com quote buy <mint> --in-sol 0.1
 ```
 
 Preflight fields to echo for buy/sell:
@@ -134,6 +146,18 @@ Mutual-exclusion rules:
 - `sell`: exactly one of `--in-token` or `--out-sol`
 - `quote buy`: exactly one of `--in-sol` or `--out-token`
 - `quote sell`: exactly one of `--in-token` or `--out-sol`
+
+Migrated-pool caveats:
+
+- If the CLI/SDK returns `PoolMigrationPending: migrate the pool before trading.`, stop and tell the user the pool is temporarily unavailable for both quoting and trading until migration completes.
+- If the CLI/SDK returns `Raydium CPMM exact-out quotes are not supported yet.`, keep the original wording and switch to exact-in routes only:
+  - buy / quote buy: use `--in-sol`
+  - sell / quote sell: use `--in-token`
+- Do not suggest retrying the same exact-out route after Raydium migration:
+  - avoid `quote buy --out-token`
+  - avoid `quote sell --out-sol`
+  - avoid `buy --out-token`
+  - avoid `sell --out-sol`
 
 ## 4) Create flow with parameter completion + preflight checklist
 
@@ -302,6 +326,12 @@ Use global `--json` when user needs structured parsing:
 
 ```bash
 trends-skill-tool --json quote buy <mint> --in-sol 0.1
+```
+
+Devnet JSON example:
+
+```bash
+trends-skill-tool --json --network devnet --rpc-url https://api.devnet.solana.com quote buy <mint> --in-sol 0.1
 ```
 
 Success payload shape:

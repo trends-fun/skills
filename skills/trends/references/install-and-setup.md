@@ -6,6 +6,7 @@
 - Network access to:
   - Solana RPC endpoint (default: `https://api.mainnet-beta.solana.com`)
   - Trends API endpoint (default: `https://api.trends.fun/v1`)
+- SDK network defaults to `mainnet-beta`; use `--network devnet` or `config set network devnet` explicitly when operating on devnet
 
 ## Global install lifecycle
 
@@ -88,6 +89,7 @@ Supported config keys:
 
 - `rpcUrl`
 - `apiBaseUrl`
+- `network`
 - `keypairPath`
 - `commitment`
 - `defaultSlippageBps`
@@ -98,18 +100,42 @@ Common config commands:
 
 ```bash
 trends-skill-tool config list
+trends-skill-tool config get network
 trends-skill-tool config get rpcUrl
+trends-skill-tool config set network devnet
 trends-skill-tool config set rpcUrl https://api.mainnet-beta.solana.com
 trends-skill-tool config set commitment finalized
 trends-skill-tool config reset
 ```
 
+Network notes:
+
+- `network` only accepts `mainnet-beta` or `devnet`
+- CLI option `--network`, environment variable `TRENDS_NETWORK`, and config key `network` share the same priority model as other config values
+- `rpcUrl` does not auto-select the SDK network; devnet requires both a devnet RPC and `--network devnet` (or equivalent config/env)
+
 Environment variables:
 
 - `TRENDS_RPC_URL`
 - `TRENDS_API_BASE_URL`
+- `TRENDS_NETWORK`
 - `TRENDS_KEYPAIR_PATH`
 - `TRENDS_COMMITMENT`
+
+Defaults:
+
+- `rpcUrl`: `https://api.mainnet-beta.solana.com`
+- `apiBaseUrl`: `https://api.trends.fun/v1`
+- `network`: `mainnet-beta`
+- `keypairPath`: `~/.config/solana/id.json`
+- `commitment`: `confirmed`
+- `defaultSlippageBps`: `100`
+
+Devnet quote example:
+
+```bash
+trends-skill-tool --network devnet --rpc-url https://api.devnet.solana.com quote buy <mint> --in-sol 0.1
+```
 
 ## Minimal ready-state checklist
 

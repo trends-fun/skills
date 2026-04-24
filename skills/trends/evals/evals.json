@@ -114,6 +114,24 @@
       "prompt": "I have project hash 9e2b0db76253700039fefa14a8351731da79e886. Show me project detail before I publish.",
       "expected_output": "Response uses `trends-skill-tool iao project get <hash>` as a read-only step, explains this is optional deep detail validation before publish, and keeps the flow consistent with later `project-url` selection for `iao create`.",
       "files": []
+    },
+    {
+      "id": 20,
+      "prompt": "I am using a devnet RPC. Show me the quote command to buy 0.1 SOL worth of token 11111111111111111111111111111111.",
+      "expected_output": "Response includes an explicit devnet command such as `trends-skill-tool --network devnet --rpc-url https://api.devnet.solana.com quote buy <mint> --in-sol 0.1`, and does not assume `rpcUrl` alone selects the SDK network.",
+      "files": []
+    },
+    {
+      "id": 21,
+      "prompt": "My quote buy failed with PoolMigrationPending: migrate the pool before trading.",
+      "expected_output": "Response keeps the original SDK message, explains the pool is temporarily unavailable for quoting/trading until migration completes, and does not suggest retrying with a different route as an immediate fix.",
+      "files": []
+    },
+    {
+      "id": 22,
+      "prompt": "buy --out-token failed with Raydium CPMM exact-out quotes are not supported yet.",
+      "expected_output": "Response keeps the original SDK wording, explains this is an exact-out limitation after Raydium CPMM migration, and switches guidance to exact-in routes such as `quote buy --in-sol` or `buy --in-sol` instead of reusing `--out-token`.",
+      "files": []
     }
   ]
 }
