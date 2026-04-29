@@ -179,17 +179,15 @@ Code-derived constraints:
 - Provide local `image-path` only when the user wants a custom image instead of the project cover
 - `desc` max 150 chars
 - `first-buy` must be numeric and `>= 0`
-- `project-submitter-bps` is the correct option name for project submitter/project-side split
-  - default `7000` = project side `70%`, token deployer/agent creator `30%`
+- `project-submitter-bps` is the correct option name
+  - default `7000`
   - minimum `5000`
   - maximum `10000`
-  - if the user does not answer the split question, use default `7000` and show it as the default 3/7 split in preflight
 
 Reward split:
 
-- selected project submitter/project side share = `project-submitter-bps` (default `7000` = `70%`)
-- agent coin creator/token deployer share = `10000 - project-submitter-bps` (default `3000` = `30%`)
-- preflight must show the percentage split before confirmation; unanswered split uses the default 3/7
+- selected project submitter share = `project-submitter-bps`
+- agent coin creator share = `10000 - project-submitter-bps`
 
 Transaction behavior:
 
