@@ -88,6 +88,11 @@ IAO note:
 - `iao agent create` and `iao agent update` are non-gated profile writes.
 - Keep the full IAO constraints and error handling in `references/iao-model.md`.
 
+Create output summary:
+
+- Successful `create` and `iao create` output includes `mintAddress`, `tokenUrl`, `imageUrl`, and `ipfsUri`.
+- When summarizing `iao create`, also include `projectUrl` and `agentAddress` when present.
+
 ## 3) Quote-first trade flow (required for buy/sell)
 
 Before any `buy` or `sell`, always quote first and explain quote summary.
@@ -218,6 +223,7 @@ trends-skill-tool create --name "My Coin" --symbol "MYC" --image-path ./logo.png
 Behavior notes:
 
 - `--image-path` is optional. If omitted, image is generated from symbol.
+- Successful create output includes `mintAddress`, `tokenUrl`, `imageUrl`, and `ipfsUri`.
 - `--dev-bps` is ignored when `--url` is not provided.
 - `--url` (when provided) only supports `x.com`/`twitter.com` profile or tweet (`/status/...`) links.
 - Invalid/unsupported `--url` values return validation errors such as:
@@ -382,3 +388,12 @@ Use this when the user already has a hash or wants single-item deep detail befor
 ```bash
 trends-skill-tool --keypair <path> iao create --project-url <url> --name <name> --symbol <symbol> [--description-url <url>] [--image-path <path>] [--desc <desc>] [--first-buy <sol>] [--project-submitter-bps <bps>]
 ```
+
+IAO image and output behavior:
+
+- If `--image-path` is omitted, `iao create` uses the selected project's cover image.
+- Do not say omitted IAO image auto-generates from `symbol`.
+- Do not download the project cover image before running `iao create`; the CLI uses the cover URL directly.
+- Missing project cover without `--image-path` fails with `iao create requires a project cover image when --image-path is omitted`.
+- Use local `--image-path` only when the user wants a custom image instead of the project cover.
+- Successful `iao create` output includes `mintAddress`, `tokenUrl`, `imageUrl`, `ipfsUri`, `projectUrl`, and `agentAddress` when present.

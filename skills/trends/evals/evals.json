@@ -94,7 +94,7 @@
     {
       "id": 16,
       "prompt": "Create an IAO coin for project https://trends.fun/project/abc named Agent Coin symbol AGENT, first buy 0.02.",
-      "expected_output": "Response treats `iao create` as gated write, performs parameter completion and preflight (wallet context, project-url, name, symbol, description-url, desc, image source, first-buy, project-submitter-bps, reward split), then asks explicit confirmation before executable write steps.",
+      "expected_output": "Response treats `iao create` as gated write, performs parameter completion and preflight (wallet context, project-url, name, symbol, description-url, desc, image source, first-buy, project-submitter-bps, reward split), states that omitted `--image-path` uses the selected project cover image, does not describe IAO omitted image as symbol auto-generation or ask to download the cover first, then asks explicit confirmation before executable write steps. If summarizing a successful create result, response includes `tokenUrl` with `mintAddress`, `imageUrl`, and `ipfsUri`.",
       "files": []
     },
     {
