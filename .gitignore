@@ -3,3 +3,6 @@ CLAUDE.md
 .claude/*
 .agents/*
 .cursor/*
+
+.DS_Store
+**/.DS_Store
