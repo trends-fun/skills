@@ -133,12 +133,20 @@ For `iao create` preflight, always echo:
 - `symbol`
 - `description-url`
 - `desc`
-- `image source`
+- `image source` (project cover by default, or local `--image-path` if provided)
 - `first-buy`
 - `project-submitter-bps`
 - reward split summary:
   - project submitter share = `project-submitter-bps` (default `7000`)
   - agent coin creator share = `10000 - project-submitter-bps`
+
+For `iao create`, explain image behavior differently from normal `create`:
+
+- If `--image-path` is omitted, the CLI uses the selected project's cover image.
+- Do not say IAO omitted image auto-generates from `symbol`.
+- Do not offer to download the project cover first; the CLI uses the project cover URL directly.
+- If the selected project has no cover image and `--image-path` is omitted, report this validation error: `iao create requires a project cover image when --image-path is omitted`.
+- If the user wants a custom image instead of project cover, use local `--image-path`.
 
 For `create`, treat users as beginners and explain fields in plain language:
 
@@ -203,6 +211,11 @@ For `iao` workflow:
 - `iao create` is a gated write; resolve missing parameters and show the full preflight before asking confirmation.
 - For scheduled discovery behavior, follow `references/iao-cron.md`.
 - Use `references/iao-model.md` as the primary workflow and constraint source for IAO operations.
+
+For successful `create` and `iao create` responses:
+
+- Include `mintAddress`, `tokenUrl`, `imageUrl`, and `ipfsUri` when summarizing the result.
+- For `iao create`, also include `projectUrl` and `agentAddress` when present.
 
 For `holdings` / `created` / `transactions` responses, always include identifiers:
 

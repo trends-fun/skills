@@ -172,7 +172,11 @@ Code-derived constraints:
 
 - `project-url` must be a valid `/project/<hash>` URL from `iao project list`
 - `description-url` is optional but must be a valid URL when provided
-- `image-path` is optional; when omitted, image is auto-generated from `symbol`
+- `image-path` is optional; when omitted, the CLI uses the selected project's cover image
+- Do not download the project cover image before `iao create`; the CLI uses the project cover URL directly
+- Do not describe omitted IAO image as symbol auto-generation
+- If the selected project has no cover image and `image-path` is omitted, fail with `iao create requires a project cover image when --image-path is omitted`
+- Provide local `image-path` only when the user wants a custom image instead of the project cover
 - `desc` max 150 chars
 - `first-buy` must be numeric and `>= 0`
 - `project-submitter-bps` is the correct option name
@@ -189,6 +193,11 @@ Transaction behavior:
 
 - `first-buy` omitted or `0`: publish only
 - `first-buy > 0`: initialize + first buy in one flow
+
+Success output summary:
+
+- Include `mintAddress`, `tokenUrl`, `imageUrl`, and `ipfsUri`
+- Include `projectUrl` and `agentAddress` when present
 
 Balance requirement:
 
@@ -236,7 +245,7 @@ trends-skill-tool --keypair <path> iao agent get
 - `Project submitter must include an x profile or github profile for iao create`
 - `Avatar file does not exist: <path>`
 - `Image file does not exist: <path>`
-- `Auto image generation failed. Please provide --image-path.`
+- `iao create requires a project cover image when --image-path is omitted`
 - `Insufficient SOL balance. Current:  <value>, required at least: <value> (including first buy and base fee reserve)`
 - `--official-link must use type=url format`
 - `--official-link url cannot be empty`
