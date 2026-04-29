@@ -150,9 +150,9 @@ Create parameter definitions (plain language):
 - `symbol`: token symbol/ticker.
 - `desc`: why this token is launched (short description).
 - `image`: token icon source (`--image-path` or auto-generated from symbol).
-- `url`: related X profile or X tweet link (`x.com`/`twitter.com`); this controls whether an X/project-side recipient can receive a split.
+- `url`: related X profile or X tweet link (`x.com`/`twitter.com`).
 - `first-buy`: first buy amount in SOL after create.
-- `dev-bps`: token deployer share / 代币部署者分成 (user share). With `url`, default `9600` means deployer `96%` and X/project side `4%`; without `url`, it is ignored.
+- `dev-bps`: token deployer share / 代币部署者分成 (user share). X creator share is `10000-dev-bps` when `url` exists.
 
 Step 1: Parameter completion (mandatory)
 
@@ -163,9 +163,9 @@ Step 1: Parameter completion (mandatory)
   - `symbol` (required)
   - `desc` (value or explicit empty)
   - `image source` (`--image-path` or explicit auto-generate)
-  - `url` (valid X URL or explicit none; ask because it determines whether X/project-side split exists)
+  - `url` (valid X URL or explicit none)
   - `first-buy` (value or explicit `0`)
-  - `dev-bps` (if `url` exists: value or explicit default `9600` = deployer `96%` / X/project side `4%`; if no `url`: explicitly mark ignored)
+  - `dev-bps` (if `url` exists: value or explicit default `9600`; if no `url`: explicitly mark ignored)
 
 Follow-up question style for missing fields:
 
@@ -173,9 +173,9 @@ Follow-up question style for missing fields:
 - Keep each question explicit and choice-like, e.g.:
   - `desc is missing. Provide a short description now, or reply "empty" to leave it blank.`
   - `image is missing. Provide --image-path, or reply "auto image" to auto-generate from symbol.`
-  - `url is missing. Provide an X profile/tweet URL for X/project-side split, or reply "no url".`
+  - `url is missing. Provide an X profile/tweet URL, or reply "no url".`
   - `first-buy is missing. Provide SOL amount, or reply "0" for no initial buy.`
-  - `dev-bps is missing (url present). Provide 0-10000, or reply "default" to use 9600 (deployer 96%, X/project side 4%).`
+  - `dev-bps is missing (url present). Provide 0-10000, or reply "default" to use 9600.`
 
 Chinese wording contract (when the assistant answers in Chinese):
 
@@ -195,7 +195,7 @@ Create Preflight Checklist (always echo):
 - image source (local `--image-path` or auto-generated)
 - `first-buy` amount (initial buy amount at create time)
 - `dev-bps` (token deployer share / 代币部署者分成)
-- creator split (token deployer vs X/project side; default with URL is `9600` = `96%` / `4%`)
+- creator split (token deployer vs X creator)
 
 Minimal create:
 
@@ -237,8 +237,8 @@ Behavior notes:
 - In non-JSON mode, missing `--url` with `--dev-bps` prints warning:
   - `Warning: --dev-bps is ignored when --url is not provided.`
 - Creator split rules:
-  - with `url`: token deployer share is `dev-bps` (default `9600` = `96%`), X/project side share is `10000-dev-bps` (default `400` = `4%`)
-  - without `url`: `--dev-bps` is ignored; effective split is token deployer `100%`, X/project side `0%`
+  - with `url`: token deployer share is `dev-bps` (default `9600` if omitted), X creator share is `10000-dev-bps`
+  - without `url`: `--dev-bps` is ignored; effective split is token deployer `100%`, X creator `0%`
 
 Step 3: Confirmation prompt:
 
@@ -396,5 +396,4 @@ IAO image and output behavior:
 - Do not download the project cover image before running `iao create`; the CLI uses the cover URL directly.
 - Missing project cover without `--image-path` fails with `iao create requires a project cover image when --image-path is omitted`.
 - Use local `--image-path` only when the user wants a custom image instead of the project cover.
-- `project-submitter-bps` defaults to `7000`, meaning project submitter/project side `70%` and token deployer/agent creator `30%`; if the user does not answer the split question, use this default 3/7 split in preflight.
 - Successful `iao create` output includes `mintAddress`, `tokenUrl`, `imageUrl`, `ipfsUri`, `projectUrl`, and `agentAddress` when present.
