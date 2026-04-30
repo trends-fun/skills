@@ -28,7 +28,7 @@ description: Help users install, configure, use, and troubleshoot @trends-fun/tr
 - **Command-Based Trigger**: Trigger for explicit commands: `create`, `buy`, `sell`, `quote`, `reward`, `wallet`, `config`, `balance`, `holdings`, `created`, `transactions`, `iao`, `iao agent get`, `iao agent create`, `iao agent update`, `iao project get`, `iao project list`, `iao create`.
 - **Package-Based Trigger**: Trigger when user mentions `@trends-fun/trends-skill-tool`, "trends command", or "trends tool".
 - **Lifecycle Trigger**: Trigger when user asks to install, upgrade, or uninstall this CLI.
-- **Error Trigger**: Trigger when user shares errors containing "trends-skill", IAO backend JSON errors (for example `error_code: 4055` / `4030`), or related bonding curve failures.
+- **Error Trigger**: Trigger when user shares errors containing "trends-skill", IAO backend JSON errors (for example `error_code: 4055` / `4030`), raw SDK migration errors such as `PoolMigrationPending: migrate the pool before trading.` / `Raydium CPMM exact-out quotes are not supported yet.`, or related bonding curve failures.
   
 ## Source-of-truth order
 
@@ -197,6 +197,11 @@ For `buy`/`sell` preflight, always:
 
 - Run quote first (`trends-skill-tool quote buy` or `trends-skill-tool quote sell`)
 - Echo route, input/output amount, slippage bps, and key quote fields
+- If the user is on devnet, include `--network devnet` and a devnet RPC explicitly in both quote and execution commands; do not infer SDK network from `rpcUrl`
+- If the user reports `PoolMigrationPending: migrate the pool before trading.`, stop the trade flow and explain that quoting/trading is unavailable until pool migration completes
+- If the user reports `Raydium CPMM exact-out quotes are not supported yet.`, keep the original SDK wording and switch guidance to exact-in routes only:
+  - buy / quote buy: use `--in-sol`
+  - sell / quote sell: use `--in-token`
 - State that `buy`/`sell` will run only after confirmation
 
 For `reward claim` preflight, always:
@@ -335,6 +340,15 @@ For gated write tasks after confirmation:
   - `trends-skill-tool wallet init`
   - `trends-skill-tool wallet address`
   - `trends-skill-tool config list|get|set|reset`
+- Use supported global options when needed:
+  - `--rpc-url <url>`
+  - `--api-base-url <url>`
+  - `--network <mainnet-beta|devnet>`
+  - `--keypair <path>`
+  - `--commitment <processed|confirmed|finalized>`
+  - `--compute-unit-limit <units>`
+  - `--compute-unit-price <microLamports>`
+  - `--json`
 - Enforce mutually exclusive amount routes:
   - `buy`: exactly one of `--in-sol` or `--out-token`
   - `sell`: exactly one of `--in-token` or `--out-sol`
@@ -350,6 +364,16 @@ For gated write tasks after confirmation:
   - `--first-buy` means initial buy amount at create time:
     - omitted or `0`: create only (no initial buy execution)
     - greater than `0`: create + first buy submitted atomically
+- Network/config constraints:
+  - SDK network must be set explicitly via `--network`, `TRENDS_NETWORK`, or config key `network`; do not infer it from `rpcUrl`
+  - Supported config keys are `rpcUrl`, `apiBaseUrl`, `network`, `keypairPath`, `commitment`, `defaultSlippageBps`, `computeUnitLimit`, `computeUnitPriceMicroLamports`
+  - Default network is `mainnet-beta`
+  - If the user is operating on devnet, prefer explicit commands such as `trends-skill-tool --network devnet --rpc-url https://api.devnet.solana.com ...`
+- Migration-specific trade constraints:
+  - `PoolMigrationPending: migrate the pool before trading.` means `buy`, `sell`, `quote buy`, and `quote sell` are temporarily unavailable for that pool
+  - `Raydium CPMM exact-out quotes are not supported yet.` means exact-out routes are unavailable after migration:
+    - buy / quote buy: do not suggest `--out-token`; use `--in-sol`
+    - sell / quote sell: do not suggest `--out-sol`; use `--in-token`
 - Reward-specific constraints:
   - `trends-skill-tool reward status` is read-only and should be the first check before claim.
   - `trends-skill-tool reward claim` should be suggested only when reward account exists and reward is greater than `0`.
@@ -370,7 +394,7 @@ For gated write tasks after confirmation:
   2. `trends-skill-tool --help`
   3. `trends-skill-tool config list`
   4. `trends-skill-tool wallet address`
-  5. Re-run the failing command with explicit endpoints or `--json` as needed
+  5. Re-run the failing command with explicit endpoints / network or `--json` as needed
 - Do not provide speculative root causes without a validation step.
 
 ## Reference routing

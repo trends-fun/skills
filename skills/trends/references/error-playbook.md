@@ -11,6 +11,9 @@ For wallet-bound failures (especially `iao`), keep the same keypair context as t
 | `Invalid mint address format` | Mint argument is malformed or not a valid Solana public key | Replace `<mint>` with a valid mint address and rerun quote first. Example: `trends-skill-tool quote buy <mint> --in-sol 0.1` | `trends-skill-tool quote buy <mint> --in-sol 0.1` |
 | `Invalid address format` or `Invalid address format. Please check mint or address arguments.` | Public key parsing failed for address or mint argument (domain validation error or normalized unexpected error) | Re-check address/mint source and rerun with corrected value | `trends-skill-tool balance <address>` or `trends-skill-tool quote buy <mint> --in-sol 0.1` |
 | `Network request failed. Please check RPC/API endpoints and connectivity.` | RPC/API endpoint unavailable, DNS/timeout/connectivity issue | Set known-good endpoints and retry. Example: `trends-skill-tool config set rpcUrl https://api.mainnet-beta.solana.com` and `trends-skill-tool config set apiBaseUrl https://api.trends.fun/v1` | `trends-skill-tool quote buy <mint> --in-sol 0.1` |
+| `network only supports mainnet-beta | devnet` | Unsupported `network` value from CLI/env/config | Set `network` to `mainnet-beta` or `devnet` only. Example: `trends-skill-tool config set network devnet` or `trends-skill-tool --network mainnet-beta quote buy <mint> --in-sol 0.1` | `trends-skill-tool config get network` or rerun the original command with explicit `--network` |
+| `PoolMigrationPending: migrate the pool before trading.` | Pool finished bonding-curve trading and is waiting for migration | Stop quoting/trading for this pool and retry only after migration completes; changing route flags will not help while pending | `trends-skill-tool quote buy <mint> --in-sol 0.1` or `trends-skill-tool quote sell <mint> --in-token 1` after migration completes |
+| `Raydium CPMM exact-out quotes are not supported yet.` | Pool has migrated to Raydium CPMM and exact-out routes are currently unsupported by the SDK | Switch to exact-in routes. Examples: `trends-skill-tool quote buy <mint> --in-sol 0.1`, `trends-skill-tool quote sell <mint> --in-token 1`, `trends-skill-tool buy <mint> --in-sol 0.1`, `trends-skill-tool sell <mint> --in-token 1` | Re-run the same side with an exact-in route |
 | `{\"status\":\"error\",\"error_code\":4055,\"error_msg\":\"User already exists\"}` | Wallet is already registered on trends.fun for this user path and cannot be reused for `iao agent create` | Create a fresh wallet and rerun with explicit keypair. Example: `trends-skill-tool wallet init --path ~/.config/solana/iao-agent.json` then `trends-skill-tool --keypair ~/.config/solana/iao-agent.json iao agent create --name \"My Agent\" --avatar-path ./agent.png` | `trends-skill-tool --keypair ~/.config/solana/iao-agent.json iao agent get` |
 | `{\"status\":\"error\",\"error_code\":4030,\"error_msg\":\"Operation not permitted\"}` | Current wallet is not an eligible/registered agent account for this IAO operation | Verify same keypair context and register/switch account. Example: `trends-skill-tool --keypair <path> wallet address`, `trends-skill-tool --keypair <path> iao agent get`, then `trends-skill-tool --keypair <path> iao agent create --name \"My Agent\" --avatar-path ./agent.png` if needed | `trends-skill-tool --keypair <path> iao agent get` |
 | `Current wallet address is not registered as an agent user. Run \`iao agent create\` first.` | `iao create` was run by a wallet that is not registered as an agent user | Register the same wallet first or switch to the correct agent wallet. Example: `trends-skill-tool --keypair <path> iao agent create --name \"My Agent\" --avatar-path ./agent.png` | `trends-skill-tool --keypair <path> iao agent get` |
@@ -40,7 +43,7 @@ For wallet-bound failures (especially `iao`), keep the same keypair context as t
 | `quote sell requires exactly one of --in-token or --out-sol.` | Both route flags were provided or neither was provided | Keep exactly one route flag | `trends-skill-tool quote sell <mint> --in-token 1` |
 | `Key file does not exist: <path>` | `keypairPath` points to a missing file | Initialize wallet or set a valid keypair path. Example: `trends-skill-tool wallet init` then `trends-skill-tool config set keypairPath ~/.config/solana/id.json` | `trends-skill-tool wallet address` |
 | `Target file already exists: <path>, use --force to overwrite` | `wallet init` target exists and overwrite flag missing | Re-run with `--force` if overwrite is intended | `trends-skill-tool wallet init --force` then `trends-skill-tool wallet address` |
-| `Unsupported config key: <key>` | `config set/get` key is not allowed | Use supported keys only (`rpcUrl`, `apiBaseUrl`, `keypairPath`, `commitment`, `defaultSlippageBps`, `computeUnitLimit`, `computeUnitPriceMicroLamports`) | `trends-skill-tool config list` |
+| `Unsupported config key: <key>` | `config set/get` key is not allowed | Use supported keys only (`rpcUrl`, `apiBaseUrl`, `network`, `keypairPath`, `commitment`, `defaultSlippageBps`, `computeUnitLimit`, `computeUnitPriceMicroLamports`) | `trends-skill-tool config list` |
 | `commitment only supports processed | confirmed | finalized` | Invalid commitment value | Set one of supported values only | `trends-skill-tool config set commitment confirmed` and `trends-skill-tool config get commitment` |
 
 ## Fallback diagnosis when no exact match exists
@@ -54,10 +57,16 @@ trends-skill-tool config list
 trends-skill-tool wallet address
 ```
 
-Then rerun the failing command with explicit values for endpoints and route flags.
+Then rerun the failing command with explicit values for endpoints, network, and route flags.
 
 Example:
 
 ```bash
-trends-skill-tool quote buy <mint> --in-sol 0.1 --rpc-url https://api.mainnet-beta.solana.com --api-base-url https://api.trends.fun/v1
+trends-skill-tool quote buy <mint> --in-sol 0.1 --network mainnet-beta --rpc-url https://api.mainnet-beta.solana.com --api-base-url https://api.trends.fun/v1
+```
+
+If the user is on devnet, switch both values together:
+
+```bash
+trends-skill-tool quote buy <mint> --in-sol 0.1 --network devnet --rpc-url https://api.devnet.solana.com --api-base-url https://api.trends.fun/v1
 ```
