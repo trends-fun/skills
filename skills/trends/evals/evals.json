@@ -4,7 +4,7 @@
     {
       "id": 1,
       "prompt": "Help me create a coin named CATMOON with symbol CATM. Set url=https://x.com/example/status/1234567890, desc='cat moon coin', first buy 0.02 SOL. I didn't provide image path.",
-      "expected_output": "Response first resolves missing create fields (at minimum image source choice and dev-bps default/explicit choice because url exists) before asking execution confirmation. After missing fields are resolved, response provides preflight summary (name/symbol/url/desc/image source/first-buy/dev-bps/split) and asks explicit confirmation. No write step before confirmation.",
+      "expected_output": "Response first resolves missing create fields (at minimum image source choice and dev-bps default/explicit choice because url exists) before asking execution confirmation. After missing fields are resolved, response provides preflight summary (name/symbol/url/desc/image source/first-buy/dev-bps/split), explains that with URL the default `dev-bps=9600` means token deployer 96% and X/project side 4%, and asks explicit confirmation. No write step before confirmation.",
       "files": []
     },
     {
@@ -46,7 +46,7 @@
     {               
       "id": 8,
       "prompt": "create a coin，name is openclaw, symbol is claw。",
-      "expected_output": "Response does not ask launch confirmation immediately. It starts parameter completion and asks how to fill unresolved fields: desc, image source (image-path vs auto), url (X profile/tweet or none), first-buy (amount or 0), and dev-bps decision rules tied to url. It explains each field in plain language for beginner users.",
+      "expected_output": "Response does not ask launch confirmation immediately. It starts parameter completion and asks how to fill unresolved fields: desc, image source (image-path vs auto), url (X profile/tweet or none, because it determines whether X/project-side split exists), first-buy (amount or 0), and dev-bps decision rules tied to url. It explains that with no URL, split is not applicable because `--dev-bps` is ignored and the token deployer receives 100%.",
       "files": []
     },
     {
@@ -94,7 +94,7 @@
     {
       "id": 16,
       "prompt": "Create an IAO coin for project https://trends.fun/project/abc named Agent Coin symbol AGENT, first buy 0.02.",
-      "expected_output": "Response treats `iao create` as gated write, performs parameter completion and preflight (wallet context, project-url, name, symbol, description-url, desc, image source, first-buy, project-submitter-bps, reward split), then asks explicit confirmation before executable write steps.",
+      "expected_output": "Response treats `iao create` as gated write, performs parameter completion and preflight (wallet context, project-url, name, symbol, description-url, desc, image source, first-buy, project-submitter-bps, reward split), states that omitted `--image-path` uses the selected project cover image, states that unanswered split uses default `project-submitter-bps=7000` meaning project side 70% and token deployer/agent creator 30%, does not describe IAO omitted image as symbol auto-generation or ask to download the cover first, then asks explicit confirmation before executable write steps. If summarizing a successful create result, response includes `tokenUrl` with `mintAddress`, `imageUrl`, and `ipfsUri`.",
       "files": []
     },
     {

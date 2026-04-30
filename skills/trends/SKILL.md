@@ -123,7 +123,7 @@ For `create` preflight, always echo:
 - `desc`
 - `image source`
 - `first-buy` (initial buy amount at create time)
-- `dev-bps` (token deployer share / 代币部署者分成) and split explanation
+- `dev-bps` (token deployer share / 代币部署者分成) and split explanation; with `url`, default `9600` means token deployer `96%` and X/project side `4%`; without `url`, `dev-bps` is ignored and split is token deployer `100%`, X/project side `0%`
 
 For `iao create` preflight, always echo:
 
@@ -133,12 +133,21 @@ For `iao create` preflight, always echo:
 - `symbol`
 - `description-url`
 - `desc`
-- `image source`
+- `image source` (project cover by default, or local `--image-path` if provided)
 - `first-buy`
 - `project-submitter-bps`
 - reward split summary:
-  - project submitter share = `project-submitter-bps` (default `7000`)
-  - agent coin creator share = `10000 - project-submitter-bps`
+  - project submitter share = `project-submitter-bps` (default `7000`, project side `70%`)
+  - agent coin creator share = `10000 - project-submitter-bps` (default `3000`, token deployer/agent creator `30%`)
+  - if the user does not answer the split question, use the default 3/7 split
+
+For `iao create`, explain image behavior differently from normal `create`:
+
+- If `--image-path` is omitted, the CLI uses the selected project's cover image.
+- Do not say IAO omitted image auto-generates from `symbol`.
+- Do not offer to download the project cover first; the CLI uses the project cover URL directly.
+- If the selected project has no cover image and `--image-path` is omitted, report this validation error: `iao create requires a project cover image when --image-path is omitted`.
+- If the user wants a custom image instead of project cover, use local `--image-path`.
 
 For `create`, treat users as beginners and explain fields in plain language:
 
@@ -146,9 +155,9 @@ For `create`, treat users as beginners and explain fields in plain language:
 - `symbol`: token ticker symbol users will see in trading views.
 - `desc`: short reason/story for why the token exists.
 - `image`: token icon source. If `--image-path` is missing, icon is auto-generated from symbol.
-- `url`: related X profile or X tweet URL (`x.com`/`twitter.com`, profile or `/status/...`).
+- `url`: related X profile or X tweet URL (`x.com`/`twitter.com`, profile or `/status/...`); this determines whether an X/project-side fee recipient can receive a split.
 - `first-buy`: first buy amount (SOL) executed right after create.
-- `dev-bps`: token deployer share (代币部署者分成, the user share). X creator share is `10000-dev-bps` when `url` exists.
+- `dev-bps`: token deployer share (代币部署者分成, the user share). When `url` exists, default `9600` means token deployer `96%` and X/project side `4%`; without `url`, `dev-bps` is ignored.
 
 `create` parameter completion contract (must happen before confirmation):
 
@@ -163,8 +172,9 @@ For `create`, treat users as beginners and explain fields in plain language:
   4. `url` (valid X profile/tweet URL or explicit none)
   5. `first-buy` (explicit number or explicit `0`)
   6. `dev-bps` (required decision only when `url` exists; otherwise mark ignored)
-- If `url` exists and `dev-bps` not provided, ask whether to use default `9600`.
-- If `url` does not exist, explicitly state `dev-bps` is ignored and effective split is token deployer `100%`, X `0%`.
+- If `url` is missing, ask for an X profile/tweet URL first because only a URL creates an X/project-side fee recipient.
+- If `url` exists and `dev-bps` not provided, ask whether to use default `9600` and state that it means token deployer `96%`, X/project side `4%`.
+- If the user does not provide `url`, explicitly state `dev-bps` is ignored and effective split is token deployer `100%`, X/project side `0%`.
 - If responding in Chinese during missing-parameter collection, use exact wording for URL prompt:
   - `请输入你想指向的费用受益人X profile 或推文链接（可留空）`
 - If responding in Chinese, label `dev-bps` as:
@@ -176,12 +186,12 @@ For `create`, treat users as beginners and explain fields in plain language:
 - If `--image-path` is not provided, explicitly state image will be auto-generated from `symbol`.
 - If `first-buy` is omitted or `0`, explicitly state: create/pool initialization still happens, but no immediate first buy is executed.
 - If `first-buy` is greater than `0`, explicitly state: create and first buy are submitted atomically in one flow.
-- If `url` is provided, show split between token deployer and X creator:
-  - token deployer share = `dev-bps` (default `9600` if omitted)
-  - X creator share = `10000 - dev-bps`
+- If `url` is provided, show split between token deployer and X/project side:
+  - token deployer share = `dev-bps` (default `9600` if omitted, `96%`)
+  - X/project side share = `10000 - dev-bps` (default `400`, `4%`)
 - If `url` is not provided, explicitly state:
   - `--dev-bps` is ignored
-  - effective split is token deployer `100%`, X creator `0%`
+  - effective split is token deployer `100%`, X/project side `0%`
 
 For `buy`/`sell` preflight, always:
 
@@ -208,6 +218,11 @@ For `iao` workflow:
 - `iao create` is a gated write; resolve missing parameters and show the full preflight before asking confirmation.
 - For scheduled discovery behavior, follow `references/iao-cron.md`.
 - Use `references/iao-model.md` as the primary workflow and constraint source for IAO operations.
+
+For successful `create` and `iao create` responses:
+
+- Include `mintAddress`, `tokenUrl`, `imageUrl`, and `ipfsUri` when summarizing the result.
+- For `iao create`, also include `projectUrl` and `agentAddress` when present.
 
 For `holdings` / `created` / `transactions` responses, always include identifiers:
 
