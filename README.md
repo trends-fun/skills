@@ -6,7 +6,7 @@ Agent skills for [Trends](https://trends.fun). Install them into your AI coding 
 
 | Skill | Description |
 | --- | --- |
-| [trends](skills/trends/) | Operate the Trends bonding curve via the `@trends-fun/trends-skill-tool` CLI — token launches, trading, reward claims, balance queries, and troubleshooting |
+| [trends](skills/trends/) | Trends 操作助手 — 发币、买卖、查仓位、领收益、项目币/IAO 和报错处理 |
 
 ## Installation
 
